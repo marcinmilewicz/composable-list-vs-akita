@@ -12,11 +12,11 @@ import { createPaginationStream } from "../../../shared/shared-state/akita-pagin
 
 
 @Component({
-    selector: "app-people-list",
-    templateUrl: "./people-list.component.html",
-    styleUrls: ["./people-list.component.css"]
+    selector: "app-people-simple-list",
+    templateUrl: "./people-simple-list.component.html",
+    styleUrls: ["./people-simple-list.component.css"]
 })
-export class PeopleListComponent implements OnInit, OnDestroy {
+export class PeopleSimpleListComponent implements OnInit, OnDestroy {
     people$: Observable<PaginationResponse<Person>>;
     form = this.formBuilder.group({
         sort: ["name"],
