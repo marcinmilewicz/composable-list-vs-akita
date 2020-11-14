@@ -1,0 +1,18 @@
+<nav class="pagination">
+    <button class="page-item"
+            [class.disabled]="paginatorRef.isFirst"
+            (click)="paginatorRef.prevPage()">
+        <a class="page-buttonnk" tabindex="-1">Previous</a>
+    </button>
+    <button class="page-item"
+            [class.active]="paginatorRef.isPageActive(page)"
+            (click)="paginatorRef.setPage(page)"
+            *ngFor="let page of controls">
+        <a class="page-buttonnk">{{ page }}</a>
+    </button>
+    <button class="page-item"
+            [class.disabled]="paginatorRef.isLast"
+            (click)="paginatorRef.nextPage()">
+        <a class="page-buttonnk">Next</a>
+    </button>
+</nav>
