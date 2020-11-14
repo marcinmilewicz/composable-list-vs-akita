@@ -16,7 +16,7 @@ import { startWith, switchMap, tap } from "rxjs/operators";
 export class PeopleListComponent implements OnInit, OnDestroy {
     people$: Observable<PaginationResponse<Person>>;
     form = this.formBuilder.group({
-        sort: [''],
+        sort: ['name'],
         query: [''],
         perPage: [10]
     })
@@ -25,9 +25,9 @@ export class PeopleListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        const sort$ = this.form.get('sort').valueChanges.pipe(startWith('id asc'));
+        const sort$ = this.form.get('sort').valueChanges.pipe(startWith('name'));
         const query$ = this.form.get('query').valueChanges.pipe(startWith(''));
-        const perPage$ = this.form.get('query').valueChanges.pipe(startWith(10));
+        const perPage$ = this.form.get('perPage').valueChanges.pipe(startWith(10));
 
         this.people$ = combineLatest([
             sort$.pipe(tap(() => this.paginatorRef.clearCache())),
@@ -36,6 +36,7 @@ export class PeopleListComponent implements OnInit, OnDestroy {
             this.paginatorRef.pageChanges
         ]).pipe(
             switchMap(([sortBy, query, perPage, page]) => {
+              console.log(perPage)
                 const requestFn = () => this.contactsService.get({page, query, sortBy, perPage});
                 // In order to remember last sorting params. It doest not required
                 this.paginatorRef.metadata.set('sortBy', sortBy);
