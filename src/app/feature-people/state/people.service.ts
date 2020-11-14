@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { PaginationResponse } from '@datorama/akita';
-import { People } from './people.model';
-import { asyncScheduler, Observable, scheduled } from 'rxjs';
-import {data} from './../../data'
+import { Person } from './people.model';
+import { Observable } from 'rxjs';
+import { getPeople } from '../../data'
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class PeopleService {
-  get(params): Observable<PaginationResponse<People>> {
-    return scheduled([data], asyncScheduler);
-  }
+    get(params): Observable<PaginationResponse<Person>> {
+        return getPeople(params);
+    }
 }
