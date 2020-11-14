@@ -9,10 +9,5 @@ export const createPaginationStream = <State, Parameters extends Record<string, 
 ) =>
     combineLatest([...fieldChanges, paginatorRef.pageChanges]).pipe(
         tap(() => paginatorRef.clearCache()),
-        switchMap((values: Parameters[keyof Parameters][]) => {
-console.log(values)
-            const requestFunction = callback(values)
-
-            return paginatorRef.getPage(requestFunction) as Observable<PaginationResponse<getEntityType<State>>>;
-        })
+        switchMap((values: Parameters[keyof Parameters][]) => paginatorRef.getPage(callback(values)))
     );
