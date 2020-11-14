@@ -1,26 +1,27 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { combineLatest, Observable } from "rxjs";
-import { PaginationResponse, PaginatorPlugin } from "@datorama/akita";
+import { getEntityType, PaginationResponse, PaginatorPlugin } from "@datorama/akita";
 import { Person } from "../../state/people.model";
 import { PEOPLE_PAGINATOR } from "../../state/people-paginator";
 import { PeopleService } from "../../state/people.service";
 import { FormBuilder } from "@angular/forms";
 import { untilDestroyed } from "ngx-take-until-destroy";
 import { startWith, switchMap, tap } from "rxjs/operators";
+import { PeopleState } from "../../state/people.store";
 
 
-const createPaginationStream = <Model, Parameters extends Record<string, object>>(
+const createPaginationStream = <State, Parameters extends Record<string, object>>(
     fieldChanges: Observable<Parameters[keyof Parameters]>[],
-    callback: (params: Parameters[keyof Parameters][]) => Observable<PaginationResponse<Model>>,
-    paginatorRef: PaginatorPlugin<Model>
+    callback: (params: Parameters[keyof Parameters][]) => () => Observable<PaginationResponse<getEntityType<State>>>,
+    paginatorRef: PaginatorPlugin<State>
 ) =>
     combineLatest(fieldChanges).pipe(
         tap(() => paginatorRef.clearCache()),
         switchMap((values: Parameters[keyof Parameters][]) => {
 
-            const requestFunction = () => callback(values)
+            const requestFunction = callback(values)
 
-            return paginatorRef.getPage(requestFunction) as Observable<PaginationResponse<Model>>;
+            return paginatorRef.getPage(requestFunction) as Observable<PaginationResponse<getEntityType<State>>>;
         })
     );
 
@@ -39,7 +40,7 @@ export class PeopleListComponent implements OnInit, OnDestroy {
     });
 
     constructor(
-        @Inject(PEOPLE_PAGINATOR) public paginatorRef: PaginatorPlugin<Person>,
+        @Inject(PEOPLE_PAGINATOR) public paginatorRef: PaginatorPlugin<PeopleState>,
         private formBuilder: FormBuilder,
         private peopleService: PeopleService
     ) {
@@ -51,10 +52,15 @@ export class PeopleListComponent implements OnInit, OnDestroy {
         const perPage$ = this.form.get("perPage").valueChanges.pipe(startWith(10));
 
 
-        const queryFactory = ([sortBy, query, perPage, page]) => this.peopleService.get({page, query, sortBy, perPage});
+        const queryFactory = ([sortBy, query, perPage, page]) => () => this.peopleService.get({
+            page,
+            query,
+            sortBy,
+            perPage
+        });
 
         this.people$ = createPaginationStream([sort$, query$, perPage$], queryFactory, this.paginatorRef).pipe(
-            tap((value) => console.log('tap',value)),
+            tap((value) => console.log('tap', value)),
             untilDestroyed(this)
         );
 
