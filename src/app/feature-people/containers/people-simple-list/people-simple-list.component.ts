@@ -33,18 +33,15 @@ export class PeopleSimpleListComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         const sort$ = this.form.get("sort").valueChanges.pipe(startWith("name"));
-        const query$ = this.form.get("query").valueChanges.pipe(startWith(""));
         const perPage$ = this.form.get("perPage").valueChanges.pipe(startWith(10));
 
-
-        const queryFactory = ([sortBy, query, perPage, page]) => () => this.peopleService.get({
+        const queryFactory = ([sortBy, perPage, page]) => () => this.peopleService.get({
             page,
-            query,
             sortBy,
             perPage
         });
 
-        this.people$ = createPaginationStream([sort$, query$, perPage$], queryFactory, this.paginatorRef).pipe(
+        this.people$ = createPaginationStream([sort$, perPage$], queryFactory, this.paginatorRef).pipe(
             tap((value) => console.log('tap', value)),
             untilDestroyed(this)
         );

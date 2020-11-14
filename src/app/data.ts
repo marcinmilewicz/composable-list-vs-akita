@@ -66,7 +66,9 @@ export function getData(params) {
   console.log('Fetching from server with params: ', params);
   const merged = {  ...params };
   const offset = (merged.page - 1) * +merged.perPage;
-  const filteredPeople = people.filter(person=>person.name.includes(params.query))
+  const filteredPeople = people.filter(person=>!params.query || person.name.includes(params.query))
+  console.log(filteredPeople)
+
   const sorted = sortBy(filteredPeople, merged.sortBy);
   const paginatedItems = sorted.slice(offset, offset + +merged.perPage);
 
