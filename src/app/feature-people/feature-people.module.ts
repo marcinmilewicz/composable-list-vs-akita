@@ -6,6 +6,9 @@ import { PeopleListComponent } from './containers/people-list/people-list.compon
   imports: [
     CommonModule
   ],
+  exports: [
+    PeopleListComponent
+  ],
   declarations: [PeopleListComponent]
 })
 export class FeaturePeopleModule { }
