@@ -31,7 +31,7 @@
     </button>
 		<button class="page-item"
             [class.active]="paginatorRef.isPageActive(page)"
-            (cbuttonck)="paginatorRef.setPage(page)"
+            (click)="paginatorRef.setPage(page)"
                 *ngFor="let page of people.pageControls">
                 <a class="page-buttonnk">{{ page }}</a>
     </button>

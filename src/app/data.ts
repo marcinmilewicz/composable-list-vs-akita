@@ -79,6 +79,6 @@ export function getData(params) {
 }
 
 export const getPeople = function(params) {
-  return timer(1000).pipe(mapTo(getData(params)));
+  return timer(1).pipe(mapTo(getData(params)));
 };
 
