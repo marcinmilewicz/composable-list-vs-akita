@@ -63,8 +63,8 @@ for (let i = 0; i < count; i++) {
 }
 
 export function getData(params) {
-  console.log('Fetching from server');
-  const merged = { ...{ sortBy: 'email', perPage: 10 }, ...params };
+  console.log('Fetching from server with params: ', params);
+  const merged = {  ...params };
   const offset = (merged.page - 1) * +merged.perPage;
   const sorted = sortBy(people, merged.sortBy);
   const paginatedItems = sorted.slice(offset, offset + +merged.perPage);
