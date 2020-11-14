@@ -1,0 +1,26 @@
+<select (change)="sort($event)">
+  <option value="id asc">Id - asc</option>
+  <option value="id desc">Id - desc</option>
+  <option value="name asc">Name - asc</option>
+  <option value="name desc">Name - desc</option>
+  <option value="gender asc">Gender - asc</option>
+  <option value="gender desc">Gender - desc</option>
+</select>
+
+<input type="text" [(ngModel)]="query" (ngModelChange)="filter($event)">
+
+<select (change)="limit($event)">
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3" selected>3</option>
+  <option value="4">4</option>
+</select>
+
+<ng-container *ngIf="data$ | async as data">
+	<pre>{{ data.items | json }}</pre>
+
+	<button *ngFor="let i of data | pages"
+          (click)="page(i)">
+    {{ i }}
+  </button>
+</ng-container>
