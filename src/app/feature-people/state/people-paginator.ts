@@ -1,5 +1,5 @@
 import { inject, InjectionToken } from '@angular/core';
-import { PeopleQuery } from './state/people.query';
+import { PeopleQuery } from './people.query';
 import { PaginatorPlugin } from '@datorama/akita';
 
 export const PEOPLE_PAGINATOR = new InjectionToken('CONTACTS_PAGINATOR', {
