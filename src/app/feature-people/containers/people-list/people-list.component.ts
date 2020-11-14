@@ -7,7 +7,7 @@ import { PeopleService } from "../../state/people.service";
 import { FormBuilder } from "@angular/forms";
 import { untilDestroyed } from "ngx-take-until-destroy";
 import { startWith, switchMap, tap } from "rxjs/operators";
-import { eventTargetPatch } from "zone.js/lib/browser/event-target";
+
 
 const createPaginationStream = <Model, Parameters extends Record<string, object>>(
     fieldChanges: Observable<Parameters[keyof Parameters]>[],
@@ -20,7 +20,7 @@ const createPaginationStream = <Model, Parameters extends Record<string, object>
 
             const requestFunction = () => callback(values)
 
-            return this.paginatorRef.getPage(callback) as Observable<PaginationResponse<Model>>;
+            return paginatorRef.getPage(requestFunction) as Observable<PaginationResponse<Model>>;
         })
     );
 
@@ -54,7 +54,7 @@ export class PeopleListComponent implements OnInit, OnDestroy {
         const queryFactory = ([sortBy, query, perPage, page]) => this.peopleService.get({page, query, sortBy, perPage});
 
         this.people$ = createPaginationStream([sort$, query$, perPage$], queryFactory, this.paginatorRef).pipe(
-            tap((value) => console.log(value)),
+            tap((value) => console.log('tap',value)),
             untilDestroyed(this)
         );
 
