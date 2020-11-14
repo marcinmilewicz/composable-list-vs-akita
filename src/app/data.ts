@@ -58,7 +58,7 @@ for (let i = 0; i < count; i++) {
   people.push({
     id: faker.random.number(),
     name: faker.name.findName(),
-    gender: faker.random.string('M','K')
+    gender: faker.random.word('M','K')
   });
 }
 
