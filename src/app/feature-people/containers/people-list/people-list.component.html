@@ -1,5 +1,5 @@
 <ng-container [formGroup]="form">
-	<select formControlName="sort">
+    <select formControlName="sort">
         <option value="id">Id - asc</option>
         <option value="-id">Id - desc</option>
         <option value="name">Name - asc</option>
@@ -8,9 +8,9 @@
         <option value="-gender">Gender - desc</option>
     </select>
 
-	<input type="text" formControlName="query">
+    <input type="text" formControlName="query">
 
-	<select formControlName="perPage">
+    <select formControlName="perPage">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -20,26 +20,26 @@
 </ng-container>
 
 <ng-container *ngIf="people$ | async as people">
-	<pre>{{  people.data | json }}</pre>
+    <pre>{{  people.data | json }}</pre>
 
-	<nav class="pagination">
+    <nav class="pagination">
 
-		<button class="page-item"
-            [class.disabled]="paginatorRef.isFirst"
-            (click)="paginatorRef.prevPage()">
-                <a class="page-buttonnk" tabindex="-1">Previous</a>
-    </button>
-		<button class="page-item"
-            [class.active]="paginatorRef.isPageActive(page)"
-            (click)="paginatorRef.setPage(page)"
+        <button class="page-item"
+                [class.disabled]="paginatorRef.isFirst"
+                (click)="paginatorRef.prevPage()">
+            <a class="page-buttonnk" tabindex="-1">Previous</a>
+        </button>
+        <button class="page-item"
+                [class.active]="paginatorRef.isPageActive(page)"
+                (click)="paginatorRef.setPage(page)"
                 *ngFor="let page of people.pageControls">
-                <a class="page-buttonnk">{{ page }}</a>
-    </button>
-		<button class="page-item"
-           [class.disabled]="paginatorRef.isLast" 
-           (click)="paginatorRef.nextPage()">
-                <a class="page-buttonnk">Next</a>
-    </button>
+            <a class="page-buttonnk">{{ page }}</a>
+        </button>
+        <button class="page-item"
+                [class.disabled]="paginatorRef.isLast"
+                (click)="paginatorRef.nextPage()">
+            <a class="page-buttonnk">Next</a>
+        </button>
 
-	</nav>
+    </nav>
 </ng-container>

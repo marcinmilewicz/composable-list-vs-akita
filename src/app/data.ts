@@ -10,7 +10,7 @@ for (let i = 0; i < count; i++) {
     people.push({
         id: faker.random.number(),
         name: faker.name.findName(),
-        gender: ["M", "K"][faker.random.number(1)]
+        gender: ['M', 'K'][faker.random.number(1)]
     });
 }
 
@@ -18,7 +18,7 @@ export function getData(params) {
     console.log('Fetching from server with params: ', params);
     const merged = {...params};
     const offset = (merged.page - 1) * +merged.perPage;
-    const filteredPeople = people.filter(person => !params.query || person.name.includes(params.query))
+    const filteredPeople = people.filter(person => !params.query || person.name.toUpperCase().includes(params.query.toUpperCase()))
 
     const sorted = sortBy(filteredPeople, merged.sortBy);
     const paginatedItems = sorted.slice(offset, offset + +merged.perPage);

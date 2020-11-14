@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PaginatorPlugin } from "@datorama/akita";
+import { PaginatorPlugin } from '@datorama/akita';
 
 @Component({
     selector: 'app-pagination-nav',

@@ -1,44 +1,58 @@
-import { Component, Inject, OnDestroy } from "@angular/core";
-import { Observable } from "rxjs";
-import { PaginationResponse, PaginatorPlugin } from "@datorama/akita";
-import { Person } from "../../state/people.model";
-import { PEOPLE_PAGINATOR } from "../../state/people-paginator";
-import { PeopleService } from "../../state/people.service";
-import { FormBuilder } from "@angular/forms";
-import { untilDestroyed } from "ngx-take-until-destroy";
-import { startWith } from "rxjs/operators";
-import { PeopleState } from "../../state/people.store";
-import { createPaginationStream } from "../../../shared/shared-pagination/akita-pagination";
-
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { Observable } from 'rxjs';
+import { PaginationResponse, PaginatorPlugin } from '@datorama/akita';
+import { Person } from '../../state/people.model';
+import { PEOPLE_PAGINATOR } from '../../state/people-paginator';
+import { PeopleService } from '../../state/people.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { startWith, tap } from 'rxjs/operators';
+import { PeopleState } from '../../state/people.store';
+import { paginationStream } from '../../../shared/shared-pagination/akita-pagination';
 
 @Component({
-    selector: "app-people-list",
-    templateUrl: "./people-list.component.html",
-    styleUrls: ["./people-list.component.css"]
+    selector: 'app-people-list',
+    templateUrl: './people-list.component.html',
+    styleUrls: ['./people-list.component.css']
 })
 export class PeopleListComponent implements OnDestroy {
     people$: Observable<PaginationResponse<Person>>;
-    form = this.formBuilder.group({
-        sort: ["name"],
-        query: [""],
-        perPage: [10]
-    });
+    form: FormGroup;
 
     constructor(
         @Inject(PEOPLE_PAGINATOR) public paginatorRef: PaginatorPlugin<PeopleState>,
         private formBuilder: FormBuilder,
         private peopleService: PeopleService
     ) {
-        const sort$ = this.form.get("sort").valueChanges.pipe(startWith("name"));
-        const query$ = this.form.get("query").valueChanges.pipe(startWith(""));
-        const perPage$ = this.form.get("perPage").valueChanges.pipe(startWith(10));
+        const initialSort: string = this.paginatorRef.metadata.get('sortBy') || 'name';
+        const initialPerPage: number = this.paginatorRef.metadata.get('perPage') || 10;
+        const initialQuery: number = this.paginatorRef.metadata.get('query') || '';
 
-        const queryFactory = ([sortBy, query, perPage, page]) =>
+        this.form = this.formBuilder.group({
+            sort: [initialSort],
+            query: [initialQuery],
+            perPage: [initialPerPage]
+        });
+
+        const sort$ = this.form.get('sort').valueChanges.pipe(startWith(initialSort));
+        const query$ = this.form.get('query').valueChanges.pipe(startWith(initialQuery));
+        const perPage$ = this.form.get('perPage').valueChanges.pipe(startWith(initialPerPage));
+
+        const fetchFunction = ([sortBy, query, perPage, page]) =>
             () => this.peopleService.get({page, query, sortBy, perPage});
 
-        this.people$ = createPaginationStream([sort$, query$, perPage$], queryFactory, this.paginatorRef).pipe(
-            untilDestroyed(this)
-        );
+        this.people$ = paginationStream(this.paginatorRef)
+            .forFields([sort$, query$, perPage$])
+            .withFetch(fetchFunction)
+            .withAction(([sortBy, query, perPage]) => {
+                console.log([sortBy, query, perPage])
+                this.paginatorRef.metadata.set('perPage', perPage);
+                this.paginatorRef.metadata.set('sortBy', sortBy);
+                this.paginatorRef.metadata.set('query', query);
+            })
+            .withCache()
+            .create()
+            .pipe(untilDestroyed(this));
     }
 
     ngOnDestroy() {

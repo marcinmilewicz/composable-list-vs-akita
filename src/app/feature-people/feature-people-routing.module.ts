@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PeopleSimpleListComponent } from "./containers/people-simple-list/people-simple-list.component";
-import { PeopleListComponent } from "./containers/people-list/people-list.component";
+
+import { PeopleListComponent } from './containers/people-list/people-list.component';
 
 const routes: Routes = [
-    {path: 'simple', component: PeopleSimpleListComponent},
+    {path: 'simple', component: PeopleListComponent},
     {path: 'withQuery', component: PeopleListComponent},
     {path: '', redirectTo: 'simple', pathMatch: 'full'},
 ];
