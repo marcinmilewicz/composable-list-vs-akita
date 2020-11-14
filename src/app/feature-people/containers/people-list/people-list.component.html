@@ -1,16 +1,16 @@
 <ng-container [formGroup]="form">
-    <select formControlName="sort">
-        <option value="id asc">Id - asc</option>
-        <option value="id desc">Id - desc</option>
-        <option value="name asc">Name - asc</option>
-        <option value="name desc">Name - desc</option>
-        <option value="gender asc">Gender - asc</option>
-        <option value="gender desc">Gender - desc</option>
+	<select formControlName="sort">
+        <option value="id">Id - asc</option>
+        <option value="-id">Id - desc</option>
+        <option value="name">Name - asc</option>
+        <option value="-name">Name - desc</option>
+        <option value="gender">Gender - asc</option>
+        <option value="-gender">Gender - desc</option>
     </select>
 
-    <input type="text" formControlName="query">
+	<input type="text" formControlName="query">
 
-    <select formControlName="pperPage">
+	<select formControlName="perPage">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -20,22 +20,26 @@
 </ng-container>
 
 <ng-container *ngIf="people$ | async as people">
-    <pre>{{  people.data | json }}</pre>
+	<pre>{{  people.data | json }}</pre>
 
-    <nav>
-        <ul class="pagination justify-content-end">
-            <li class="page-item" [class.disabled]="paginatorRef.isFirst" (click)="paginatorRef.prevPage()">
-                <a class="page-link" tabindex="-1">Previous</a>
-            </li>
-            <li class="page-item"
-                [class.active]="paginatorRef.isPageActive(page)"
-                (click)="paginatorRef.setPage(page)"
+	<nav class="pagination">
+
+		<button class="page-item"
+            [class.disabled]="paginatorRef.isFirst"
+            (click)="paginatorRef.prevPage()">
+                <a class="page-buttonnk" tabindex="-1">Previous</a>
+    </button>
+		<button class="page-item"
+            [class.active]="paginatorRef.isPageActive(page)"
+            (cbuttonck)="paginatorRef.setPage(page)"
                 *ngFor="let page of people.pageControls">
-                <a class="page-link">{{ page }}</a>
-            </li>
-            <li class="page-item" [class.disabled]="paginatorRef.isLast" (click)="paginatorRef.nextPage()">
-                <a class="page-link">Next</a>
-            </li>
-        </ul>
-    </nav>
+                <a class="page-buttonnk">{{ page }}</a>
+    </button>
+		<button class="page-item"
+           [class.disabled]="paginatorRef.isLast" 
+           (click)="paginatorRef.nextPage()">
+                <a class="page-buttonnk">Next</a>
+    </button>
+
+	</nav>
 </ng-container>
