@@ -39,7 +39,7 @@ export const createPaginationStream = <State, Parameters extends { [K in keyof P
         switchMap((values: Parameters[keyof Parameters][]) => paginatorRef.getPage(callback(values)))
     );
 
-export const newPaginationStream = <State, Parameters extends Record<string, object>>(
+export const newPaginableStream = <State, Parameters extends Record<string, object>>(
     paginatorRef: PaginatorPlugin<State>,
     form: FormGroup
 ) => {

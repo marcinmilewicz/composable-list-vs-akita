@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { startWith, tap } from 'rxjs/operators';
 import { PeopleState } from '../../state/people.store';
-import { createInitialParameters, newPaginationStream, persistParametersMetaData } from '../../../shared/shared-pagination/akita-pagination';
+import { createInitialParameters, newPaginableStream, persistParametersMetaData } from '../../../shared/shared-pagination/akita-pagination';
 
 interface PeopleListParameters {
     sortBy: string;
@@ -46,7 +46,7 @@ export class PeopleListComponent implements OnDestroy {
         const persistParameters = ([sortBy, query, perPage, page]) =>
             persistParametersMetaData(paginatorRef, { page, query, sortBy, perPage })
 
-        this.people$ = newPaginationStream(this.paginatorRef, this.form)
+        this.people$ = newPaginableStream(this.paginatorRef, this.form)
             .withInitialParameters({ sortBy, query, perPage })
             .withFetch(fetchFunction)
             .withAction(persistParameters)

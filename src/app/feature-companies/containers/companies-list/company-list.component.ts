@@ -7,7 +7,7 @@ import { CompaniesService } from '../../state/companies.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { CompaniesState } from '../../state/companies.store';
-import { createInitialParameters, newPaginationStream, persistParametersMetaData } from '../../../shared/shared-pagination/akita-pagination';
+import { createInitialParameters, newPaginableStream, persistParametersMetaData } from '../../../shared/shared-pagination/akita-pagination';
 import { CompaniesQuery } from '../../state/companies.query';
 
 interface CompaniesListParameters {
@@ -51,7 +51,7 @@ export class CompanyListComponent implements OnDestroy {
         const persistParameters = ([sortBy, query, country, perPage, page]) =>
             persistParametersMetaData(paginatorRef, { page, query, country, sortBy, perPage })
 
-        this.companies$ = newPaginationStream(this.paginatorRef, this.form)
+        this.companies$ = newPaginableStream(this.paginatorRef, this.form)
             .withInitialParameters({ sortBy, query, country, perPage })
             .withFetch(fetchFunction)
             .withAction(persistParameters)
