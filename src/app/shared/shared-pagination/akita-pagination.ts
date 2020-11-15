@@ -6,7 +6,7 @@ import { FormGroup } from '@angular/forms';
 // @ts-ignore
 // todo working only with Typescript 4.1.0
 //export type StreamedParameters<Parameters> = Partial<{ [K in keyof Parameters as `${K}$`]: Observable<Parameters[K]> }>
-export type StreamedParameters<Parameters> = Partial<{ [K in keyof Parameters as any]: Observable<Parameters[K]> }>
+export type StreamedParameters<Parameters> = Partial<{ [K in any]: Observable<Parameters[K]> }>
 
 export const createInitialParameters = <State, Parameters>(paginatorRef: PaginatorPlugin<State>, parameters: Parameters): Partial<{ [K in keyof Parameters]: Parameters[K] }> =>
     Object.keys(parameters).reduce((result, key) => {
