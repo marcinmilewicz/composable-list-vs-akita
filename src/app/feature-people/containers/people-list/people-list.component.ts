@@ -8,7 +8,15 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { startWith, tap } from 'rxjs/operators';
 import { PeopleState } from '../../state/people.store';
-import { newPaginationStream } from '../../../shared/shared-pagination/akita-pagination';
+import { createInitialParameters, newPaginationStream, persistParametersMetaData } from '../../../shared/shared-pagination/akita-pagination';
+
+interface PeopleListParameters {
+    sortBy: string;
+    perPage: number;
+    query: string
+}
+
+const initialParameters: PeopleListParameters = { sortBy: 'name', perPage: 10, query: '' };
 
 @Component({
     selector: 'app-people-list',
@@ -24,35 +32,27 @@ export class PeopleListComponent implements OnDestroy {
         private formBuilder: FormBuilder,
         private peopleService: PeopleService
     ) {
-        const initialSort: string = this.paginatorRef.metadata.get('sortBy') || 'name';
-        const initialPerPage: number = this.paginatorRef.metadata.get('perPage') || 10;
-        const initialQuery: number = this.paginatorRef.metadata.get('query') || '';
+        const { query, sortBy, perPage } = createInitialParameters(this.paginatorRef, initialParameters);
 
         this.form = this.formBuilder.group({
-            sort: [initialSort],
-            query: [initialQuery],
-            perPage: [initialPerPage]
+            sortBy: [sortBy],
+            query: [query],
+            perPage: [perPage],
         });
-
-        const sort$ = this.form.get('sort').valueChanges.pipe(startWith(initialSort));
-        const query$ = this.form.get('query').valueChanges.pipe(startWith(initialQuery));
-        const perPage$ = this.form.get('perPage').valueChanges.pipe(startWith(initialPerPage));
 
         const fetchFunction = ([sortBy, query, perPage, page]) =>
             () => this.peopleService.get({ page, query, sortBy, perPage });
 
-        // this.people$ = paginationStream(this.paginatorRef)
-        //     .forFields([sort$, query$, perPage$])
-        //     .withFetch(fetchFunction)
-        //     .withAction(([sortBy, query, perPage]) => {
-        //         console.log([sortBy, query, perPage])
-        //         this.paginatorRef.metadata.set('perPage', perPage);
-        //         this.paginatorRef.metadata.set('sortBy', sortBy);
-        //         this.paginatorRef.metadata.set('query', query);
-        //     })
-        //     .withCache()
-        //     .create()
-        //     .pipe(untilDestroyed(this));
+        const persistParameters = ([sortBy, query, perPage, page]) =>
+            persistParametersMetaData(paginatorRef, { page, query, sortBy, perPage })
+
+        this.people$ = newPaginationStream(this.paginatorRef, this.form)
+            .withInitialParameters({ sortBy, query, perPage })
+            .withFetch(fetchFunction)
+            .withAction(persistParameters)
+            .withCache()
+            .create()
+            .pipe(untilDestroyed(this));
     }
 
     ngOnDestroy() {
