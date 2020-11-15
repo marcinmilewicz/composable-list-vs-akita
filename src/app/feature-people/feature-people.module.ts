@@ -7,7 +7,6 @@ import { FeaturePeopleRoutingModule } from './feature-people-routing.module';
 
 @NgModule({
     imports: [CommonModule, ReactiveFormsModule, SharedPaginationModule, FeaturePeopleRoutingModule],
-    exports: [PeopleListComponent,],
     declarations: [PeopleListComponent]
 })
 export class FeaturePeopleModule {

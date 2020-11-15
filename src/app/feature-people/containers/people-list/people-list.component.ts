@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { startWith, tap } from 'rxjs/operators';
 import { PeopleState } from '../../state/people.store';
-import { paginationStream } from '../../../shared/shared-pagination/akita-pagination';
+import { newPaginationStream } from '../../../shared/shared-pagination/akita-pagination';
 
 @Component({
     selector: 'app-people-list',
@@ -39,20 +39,20 @@ export class PeopleListComponent implements OnDestroy {
         const perPage$ = this.form.get('perPage').valueChanges.pipe(startWith(initialPerPage));
 
         const fetchFunction = ([sortBy, query, perPage, page]) =>
-            () => this.peopleService.get({page, query, sortBy, perPage});
+            () => this.peopleService.get({ page, query, sortBy, perPage });
 
-        this.people$ = paginationStream(this.paginatorRef)
-            .forFields([sort$, query$, perPage$])
-            .withFetch(fetchFunction)
-            .withAction(([sortBy, query, perPage]) => {
-                console.log([sortBy, query, perPage])
-                this.paginatorRef.metadata.set('perPage', perPage);
-                this.paginatorRef.metadata.set('sortBy', sortBy);
-                this.paginatorRef.metadata.set('query', query);
-            })
-            .withCache()
-            .create()
-            .pipe(untilDestroyed(this));
+        // this.people$ = paginationStream(this.paginatorRef)
+        //     .forFields([sort$, query$, perPage$])
+        //     .withFetch(fetchFunction)
+        //     .withAction(([sortBy, query, perPage]) => {
+        //         console.log([sortBy, query, perPage])
+        //         this.paginatorRef.metadata.set('perPage', perPage);
+        //         this.paginatorRef.metadata.set('sortBy', sortBy);
+        //         this.paginatorRef.metadata.set('query', query);
+        //     })
+        //     .withCache()
+        //     .create()
+        //     .pipe(untilDestroyed(this));
     }
 
     ngOnDestroy() {

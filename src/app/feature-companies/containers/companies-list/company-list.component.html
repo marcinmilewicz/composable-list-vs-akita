@@ -1,0 +1,31 @@
+<ng-container [formGroup]="form">
+    <select formControlName="sortBy">
+        <option value="id">Id - asc</option>
+        <option value="-id">Id - desc</option>
+        <option value="name">Name - asc</option>
+        <option value="-name">Name - desc</option>
+        <option value="product">Product - asc</option>
+        <option value="-product">Product - desc</option>
+    </select>
+
+    <input type="text" formControlName="query">
+
+    <select formControlName="country">
+        <option *ngFor="let country of countries$ | async" [value]="country">{{country}}</option>
+
+    </select>
+
+    <select formControlName="perPage">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="10">10</option>
+    </select>
+
+</ng-container>
+
+<ng-container *ngIf="companies$ | async as company">
+    <pre>{{  company.data | json }}</pre>
+    <app-pagination-nav [paginatorRef]="paginatorRef" [controls]="company.pageControls"></app-pagination-nav>
+</ng-container>

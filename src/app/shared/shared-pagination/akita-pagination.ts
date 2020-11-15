@@ -1,16 +1,35 @@
 import { getEntityType, PaginationResponse, PaginatorPlugin } from '@datorama/akita';
 import { combineLatest, Observable } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { startWith, switchMap, tap } from 'rxjs/operators';
+import { FormGroup } from '@angular/forms';
+
+// @ts-ignore
+export type StreamedParameters<Parameters> = Partial<{ [K in keyof Parameters as `${K}$`]: Observable<Parameters[K]> }>
+
+export const createInitialParameters = <State, Parameters>(paginatorRef: PaginatorPlugin<State>, parameters: Parameters): Partial<{ [K in keyof Parameters]: Parameters[K] }> =>
+    Object.keys(parameters).reduce((result, key) => {
+        result[key] = paginatorRef.metadata.get(key) || parameters[key];
+        return result;
+    }, {})
+
+export const getFormStreams = <Parameters>(form: FormGroup, initialParameters: Parameters): StreamedParameters<Parameters> =>
+    Object.keys(initialParameters).reduce((result: StreamedParameters<Parameters>, key) => {
+        result[`$${key}`] = form.get(key).valueChanges.pipe(startWith(initialParameters[key] as object))
+        return result;
+    }, {})
+
+export const persistParametersMetaData = <State, Parameters>(paginatorRef: PaginatorPlugin<State>, params: Partial<{ [K in keyof Parameters]: Parameters[K] }>): void =>
+    Object.keys(params).forEach((parameter) => paginatorRef.metadata.set(parameter, params[parameter]));
 
 export interface PaginationStreamContext<State, Parameters> {
     create: () => Observable<PaginationResponse<getEntityType<State>>>,
-    forFields: (fields: Observable<Parameters[keyof Parameters]>[]) => Partial<PaginationStreamContext<State, Parameters>>,
+    withInitialParameters: (fields: Partial<{ [K in keyof Parameters]: any }>) => Partial<PaginationStreamContext<State, Parameters>>,
     withFetch: (fetchFunction: (params: Parameters[keyof Parameters][]) => () => Observable<PaginationResponse<getEntityType<State>>>) => Partial<PaginationStreamContext<State, Parameters>>,
-    withAction: (actionFunction: (params: Parameters[keyof Parameters][])  => void) => Partial<PaginationStreamContext<State, Parameters>>,
+    withAction: (actionFunction: (params: Parameters[keyof Parameters][]) => void) => Partial<PaginationStreamContext<State, Parameters>>,
     withCache: () => Partial<PaginationStreamContext<State, Parameters>>
 }
 
-export const createPaginationStream = <State, Parameters extends Record<string, object>>(
+export const createPaginationStream = <State, Parameters extends { [K in keyof Parameters]: Parameters[K] }>(
     fieldChanges: Observable<Parameters[keyof Parameters]>[],
     callback: (params: Parameters[keyof Parameters][]) => () => Observable<PaginationResponse<getEntityType<State>>>,
     paginatorRef: PaginatorPlugin<State>
@@ -20,36 +39,33 @@ export const createPaginationStream = <State, Parameters extends Record<string, 
         switchMap((values: Parameters[keyof Parameters][]) => paginatorRef.getPage(callback(values)))
     );
 
-export const paginationStream = <State, Parameters extends Record<string, object>>(
-    paginatorRef: PaginatorPlugin<State>
+export const newPaginationStream = <State, Parameters extends Record<string, object>>(
+    paginatorRef: PaginatorPlugin<State>,
+    form: FormGroup
 ) => {
     const context: Partial<PaginationStreamContext<State, Parameters>> = {}
-    let fieldStreams: Observable<Parameters[keyof Parameters]>[];
+    let initialParameters: Partial<{ [K in keyof Parameters]: Parameters[K] }>
     let fetchFunction: (params: Parameters[keyof Parameters][]) => () => Observable<PaginationResponse<getEntityType<State>>>;
     let actionFunction: (params: Parameters[keyof Parameters][]) => () => void;
     let persistCache = false;
 
-    context.forFields = (fields: Observable<Parameters[keyof Parameters]>[]) => {
-        fieldStreams = [...fields];
-
+    context.withInitialParameters = (value: Partial<{ [K in keyof Parameters]: Parameters[K] }>) => {
+        initialParameters = value;
         return context;
     }
 
     context.withFetch = (callback: (params: Parameters[keyof Parameters][]) => () => Observable<PaginationResponse<getEntityType<State>>>) => {
         fetchFunction = callback.bind({})
-
         return context;
     }
 
     context.withAction = (callback: (params: Parameters[keyof Parameters][]) => void) => {
         actionFunction = callback.bind({})
-
         return context;
     }
 
     context.withCache = () => {
         persistCache = true;
-
         return context;
     }
 
@@ -57,6 +73,8 @@ export const paginationStream = <State, Parameters extends Record<string, object
         if (!persistCache) {
             paginatorRef.clearCache()
         }
+
+        const fieldStreams: Observable<Parameters[keyof Parameters]>[] = Object.values(getFormStreams(form, initialParameters));
 
         return combineLatest([...fieldStreams, paginatorRef.pageChanges]).pipe(
             tap(() => paginatorRef.clearCache()),

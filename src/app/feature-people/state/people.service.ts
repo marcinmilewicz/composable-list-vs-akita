@@ -4,7 +4,7 @@ import { Person } from './people.model';
 import { Observable } from 'rxjs';
 import { getPeople } from '../../data'
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class PeopleService {
     get(params): Observable<PaginationResponse<Person>> {
         return getPeople(params);

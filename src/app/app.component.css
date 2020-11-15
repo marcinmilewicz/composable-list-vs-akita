@@ -1,3 +1,11 @@
 p {
     font-family: Lato;
 }
+
+.menu li {
+    display: inline;
+}
+
+.menu-item {
+    margin: 1rem;
+}
