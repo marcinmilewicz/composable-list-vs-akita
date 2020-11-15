@@ -76,7 +76,9 @@ export const _paginationBuilderFactory = <State, Parameters>(paginatorRef: Pagin
                     actionFunction(values);
                 }
             }),
-            switchMap((values: Parameters[keyof Parameters][]) => paginatorRef.getPage(fetchFunction(values)))
+            switchMap((values: Parameters[keyof Parameters][]) =>
+                paginatorRef.getPage(fetchFunction(values)).pipe(tap(({ currentPage }) => paginatorRef.setPage(currentPage)))
+            )
         );
     };
 
