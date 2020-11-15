@@ -4,7 +4,7 @@ import { startWith, switchMap, tap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 
 // @ts-ignore
-// todo working locally only with Typescript 4.1.0 (Stackblitz has issue with this version, Prettier also)
+// todo working locally only with Typescript 4.1.0 (string templates in type AND 'as' parameter in types) (Stackblitz has issue with this version, Prettier also)
 //export type StreamedParameters<Parameters> = Partial<{ [K in keyof Parameters as `${K}$`]: Observable<Parameters[K]> }>
 export type StreamedParameters<Parameters> = any;
 export type ParametersWithPageIdentifier<Parameters> = Partial<Parameters> & { page: number };
