@@ -6,14 +6,13 @@ import { PEOPLE_PAGINATOR } from '../../state/people-paginator';
 import { PeopleService } from '../../state/people.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { untilDestroyed } from 'ngx-take-until-destroy';
-import { startWith, tap } from 'rxjs/operators';
 import { PeopleState } from '../../state/people.store';
-import { createInitialParameters, newPaginableStream, persistParametersMetaData } from '../../../shared/shared-pagination/akita-pagination';
+import { paginationTools } from '../../../shared/shared-pagination/akita-pagination';
 
 interface PeopleListParameters {
     sortBy: string;
     perPage: number;
-    query: string
+    query: string;
 }
 
 const initialParameters: PeopleListParameters = { sortBy: 'name', perPage: 10, query: '' };
@@ -21,18 +20,20 @@ const initialParameters: PeopleListParameters = { sortBy: 'name', perPage: 10, q
 @Component({
     selector: 'app-people-list',
     templateUrl: './people-list.component.html',
-    styleUrls: ['./people-list.component.css']
+    styleUrls: ['./people-list.component.css'],
 })
 export class PeopleListComponent implements OnDestroy {
     people$: Observable<PaginationResponse<Person>>;
     form: FormGroup;
 
     constructor(
-        @Inject(PEOPLE_PAGINATOR) public paginatorRef: PaginatorPlugin<PeopleState>,
+        @Inject(PEOPLE_PAGINATOR) public paginator: PaginatorPlugin<PeopleState>,
         private formBuilder: FormBuilder,
         private peopleService: PeopleService
     ) {
-        const { query, sortBy, perPage } = createInitialParameters(this.paginatorRef, initialParameters);
+        const { createInitialParameters, persistParametersMetaData, paginationBuilder } = paginationTools(paginator);
+
+        const { query, sortBy, perPage } = createInitialParameters(initialParameters);
 
         this.form = this.formBuilder.group({
             sortBy: [sortBy],
@@ -40,13 +41,11 @@ export class PeopleListComponent implements OnDestroy {
             perPage: [perPage],
         });
 
-        const fetchFunction = ([sortBy, query, perPage, page]) =>
-            () => this.peopleService.get({ page, query, sortBy, perPage });
+        const fetchFunction = <PeopleState>([sortBy, query, perPage, page]) => () => this.peopleService.get({ page, query, sortBy, perPage });
 
-        const persistParameters = ([sortBy, query, perPage, page]) =>
-            persistParametersMetaData(paginatorRef, { page, query, sortBy, perPage })
+        const persistParameters = ([sortBy, query, perPage, page]) => persistParametersMetaData({ page, query, sortBy, perPage });
 
-        this.people$ = newPaginableStream(this.paginatorRef, this.form)
+        this.people$ = paginationBuilder<PeopleListParameters>(this.form)
             .withInitialParameters({ sortBy, query, perPage })
             .withFetch(fetchFunction)
             .withAction(persistParameters)
@@ -56,6 +55,6 @@ export class PeopleListComponent implements OnDestroy {
     }
 
     ngOnDestroy() {
-        this.paginatorRef.destroy();
+        this.paginator.destroy();
     }
 }

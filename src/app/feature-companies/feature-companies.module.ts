@@ -7,7 +7,6 @@ import { CompanyListComponent } from './containers/companies-list/company-list.c
 
 @NgModule({
     imports: [CommonModule, ReactiveFormsModule, SharedPaginationModule, FeatureCompaniesRoutingModule],
-    declarations: [CompanyListComponent]
+    declarations: [CompanyListComponent],
 })
-export class FeatureCompaniesModule {
-}
+export class FeatureCompaniesModule {}

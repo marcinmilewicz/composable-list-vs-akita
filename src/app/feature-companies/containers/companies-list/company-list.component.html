@@ -2,25 +2,26 @@
     <label>
         Sort by:
         <select formControlName="sortBy">
-            <option *ngFor="let option of sortingOptions" [value]="option.value">{{option.label}}</option>
+            <option *ngFor="let option of sortingOptions" [value]="option.value">{{ option.label }}</option>
         </select>
     </label>
 
     <label>
         Search name:
-        <input type="text" formControlName="query">
+        <input type="text" formControlName="query" />
     </label>
 
-    <label> Filter country:
+    <label>
+        Filter country:
         <select formControlName="country">
-            <option *ngFor="let country of countries$ | async" [value]="country">{{country}}</option>
-
+            <option *ngFor="let country of countries$ | async" [value]="country">{{ country }}</option>
         </select>
     </label>
 
-    <label>Per page:
+    <label
+        >Per page:
         <select formControlName="perPage">
-            <option *ngFor="let option of [5,10,15,50]" [value]="option">{{option}}</option>
+            <option *ngFor="let option of [5, 10, 15, 50]" [value]="option">{{ option }}</option>
         </select>
     </label>
 </section>
@@ -29,7 +30,8 @@
 </section>
 <ng-container *ngIf="companies$ | async as companies">
     <section class="list">
-        <div class="list-item" *ngFor="let company of companies.data">{{company | json}}
+        <div class="list-item" *ngFor="let company of companies.data">
+            {{ company | json }}
             <button (click)="modify(company.id)">Modify</button>
         </div>
     </section>

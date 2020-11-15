@@ -9,16 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 
 @NgModule({
-    imports: [
-        BrowserModule,
-        FormsModule,
-        CommonModule,
-        FeaturePeopleModule,
-        AppRoutingModule,
-        AkitaNgDevtools.forRoot()
-    ],
+    imports: [BrowserModule, FormsModule, CommonModule, FeaturePeopleModule, AppRoutingModule, AkitaNgDevtools.forRoot()],
     declarations: [AppComponent],
     bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

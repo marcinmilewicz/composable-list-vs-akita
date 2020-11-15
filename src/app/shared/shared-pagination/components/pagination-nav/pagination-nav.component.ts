@@ -4,20 +4,17 @@ import { PaginatorPlugin } from '@datorama/akita';
 @Component({
     selector: 'app-pagination-nav',
     templateUrl: './pagination-nav.component.html',
-    styleUrls: ['./pagination-nav.component.css']
+    styleUrls: ['./pagination-nav.component.css'],
 })
 export class PaginationNavComponent<T> implements OnInit {
-
     @Input() paginatorRef: PaginatorPlugin<T> = null;
-    @Input() controls: number[] = []
+    @Input() controls: number[] = [];
 
-    constructor() {
-    }
+    constructor() {}
 
     ngOnInit() {
         if (!this.paginatorRef) {
-            throw new Error('PaginationRef must be specified.')
+            throw new Error('PaginationRef must be specified.');
         }
     }
-
 }

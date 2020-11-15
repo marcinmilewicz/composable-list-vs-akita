@@ -7,5 +7,5 @@ export const COMPANIES_PAGINATOR = new InjectionToken('COMPANIES_PAGINATOR', {
     factory: () => {
         const companiesQuery = inject(CompaniesQuery);
         return new PaginatorPlugin(companiesQuery).withControls().withRange();
-    }
+    },
 });

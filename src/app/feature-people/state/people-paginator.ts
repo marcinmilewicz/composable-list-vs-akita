@@ -7,5 +7,5 @@ export const PEOPLE_PAGINATOR = new InjectionToken('CONTACTS_PAGINATOR', {
     factory: () => {
         const peopleQuery = inject(PeopleQuery);
         return new PaginatorPlugin(peopleQuery).withControls().withRange();
-    }
+    },
 });

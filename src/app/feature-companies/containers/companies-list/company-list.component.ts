@@ -7,7 +7,7 @@ import { CompaniesService } from '../../state/companies.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { CompaniesState } from '../../state/companies.store';
-import { createInitialParameters, newPaginableStream, persistParametersMetaData } from '../../../shared/shared-pagination/akita-pagination';
+import { paginationTools } from '../../../shared/shared-pagination/akita-pagination';
 import { CompaniesQuery } from '../../state/companies.query';
 import { tap } from 'rxjs/operators';
 
@@ -17,28 +17,26 @@ const sortingOptions = [
     { value: 'name', label: 'Name - asc' },
     { value: '-name', label: 'Name - desc' },
     { value: 'product', label: 'Product - asc' },
-    { value: '-product', label: 'Product - desc' }
-]
+    { value: '-product', label: 'Product - desc' },
+];
 
 interface CompaniesListParameters {
     sortBy: string;
     perPage: number;
     country: string;
-    query: string
+    query: string;
 }
 
-const initialParameters: CompaniesListParameters = { sortBy: 'name', perPage: 10, country: '', query: '' }
+const initialParameters: CompaniesListParameters = { sortBy: 'name', perPage: 10, country: '', query: '' };
 
 @Component({
     selector: 'app-company-list',
     templateUrl: './company-list.component.html',
-    styleUrls: ['company-list.component.css']
+    styleUrls: ['company-list.component.css'],
 })
-
 export class CompanyListComponent implements OnDestroy {
     companies$: Observable<PaginationResponse<Company>>;
     countries$: Observable<string[]> = this.companiesQuery.countries$;
-    actionTrigger = new Subject();
 
     form: FormGroup;
 
@@ -50,22 +48,23 @@ export class CompanyListComponent implements OnDestroy {
         private companiesService: CompaniesService,
         private companiesQuery: CompaniesQuery
     ) {
-        const { country, query, sortBy, perPage } = createInitialParameters(this.paginator, initialParameters);
+        const { createInitialParameters, persistParametersMetaData, paginationBuilder } = paginationTools(paginator);
+
+        const { country, query, sortBy, perPage } = createInitialParameters(initialParameters);
 
         this.form = this.formBuilder.group({
             sortBy: [sortBy],
             query: [query],
             perPage: [perPage],
-            country: [country]
+            country: [country],
         });
 
-        const fetchFunction = ([sortBy, query, country, perPage, page]) =>
-            () => this.companiesService.get({ page, query, country, sortBy, perPage });
+        const fetchFunction = ([sortBy, query, country, perPage, page]) => () => this.companiesService.get({ page, query, country, sortBy, perPage });
 
         const persistParameters = ([sortBy, query, country, perPage, page]) =>
-            persistParametersMetaData(paginator, { page, query, country, sortBy, perPage })
+            persistParametersMetaData<CompaniesListParameters>({ page, query, country, sortBy, perPage });
 
-        this.companies$ = newPaginableStream(this.paginator, this.form)
+        this.companies$ = paginationBuilder<CompaniesListParameters>(this.form)
             .withInitialParameters({ sortBy, query, country, perPage })
             .withFetch(fetchFunction)
             .withAction(persistParameters)
@@ -75,17 +74,23 @@ export class CompanyListComponent implements OnDestroy {
     }
 
     add(): void {
-        this.companiesService.addCompany().pipe(
-            tap(() => this.paginator.refreshCurrentPage()),
-            untilDestroyed(this)
-        ).subscribe()
+        this.companiesService
+            .addCompany()
+            .pipe(
+                tap(() => this.paginator.refreshCurrentPage()),
+                untilDestroyed(this)
+            )
+            .subscribe();
     }
 
     modify(id: number): void {
-        this.companiesService.updateCompany(id).pipe(
-            tap(() => this.paginator.refreshCurrentPage()),
-            untilDestroyed(this)
-        ).subscribe()
+        this.companiesService
+            .updateCompany(id)
+            .pipe(
+                tap(() => this.paginator.refreshCurrentPage()),
+                untilDestroyed(this)
+            )
+            .subscribe();
     }
 
     ngOnDestroy() {

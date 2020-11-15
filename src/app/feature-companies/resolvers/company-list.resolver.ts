@@ -5,8 +5,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CompanyListResolver implements Resolve<string[]> {
-    constructor(private companiesService: CompaniesService) {
-    }
+    constructor(private companiesService: CompaniesService) {}
 
     resolve(): Observable<string[]> {
         return this.companiesService.fetchCountries();

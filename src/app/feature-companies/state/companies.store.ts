@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
-import { Company } from './companies.model'
+import { Company } from './companies.model';
 
 export interface CompaniesState extends EntityState<Company> {
-    countries: string[]
+    countries: string[];
 }
 
 const initialState: CompaniesState = {
-    countries: []
-}
+    countries: [],
+};
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'companies' })

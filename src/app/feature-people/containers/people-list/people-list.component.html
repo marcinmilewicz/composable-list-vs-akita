@@ -8,7 +8,7 @@
         <option value="-gender">Gender - desc</option>
     </select>
 
-    <input type="text" formControlName="query">
+    <input type="text" formControlName="query" />
 
     <select formControlName="perPage">
         <option value="1">1</option>
@@ -20,6 +20,6 @@
 </ng-container>
 
 <ng-container *ngIf="people$ | async as people">
-    <pre>{{  people.data | json }}</pre>
-    <app-pagination-nav [paginatorRef]="paginatorRef" [controls]="people.pageControls"></app-pagination-nav>
+    <pre>{{ people.data | json }}</pre>
+    <app-pagination-nav [paginatorRef]="paginator" [controls]="people.pageControls"></app-pagination-nav>
 </ng-container>
