@@ -4,7 +4,7 @@ import { startWith, switchMap, tap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 
 // @ts-ignore
-// todo working only with Typescript 4.1.0
+// todo working locally only with Typescript 4.1.0 (Stackblitz has issue with this version)
 //export type StreamedParameters<Parameters> = Partial<{ [K in keyof Parameters as `${K}$`]: Observable<Parameters[K]> }>
 export type StreamedParameters<Parameters> = Partial<{ [K in any]: Observable<Parameters[K]> }>
 
