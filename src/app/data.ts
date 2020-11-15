@@ -38,26 +38,36 @@ const createCompaniesData = () => {
 createPeopleData();
 createCompaniesData();
 
-const getData = (params, entities) => {
-    console.log('Fetching from server with params: ', params);
-    const merged = { ...params };
-    const offset = (merged.page - 1) * +merged.perPage;
+const getDataForPage = <T>(page, params, entities) => {
+    const offset = (page - 1) * +params.perPage;
     const filteredData = entities
         .filter((item) => !params.query || item.name.toUpperCase().includes(params.query.toUpperCase()))
         .filter((item) => !params.country || item.country === params.country);
 
-    const sortingIndicators = merged.sortBy && merged.sortBy.split('-');
+    const sortingIndicators = params.sortBy && params.sortBy.split('-');
     const reverseIndicator = sortingIndicators.length === 2;
-    const sorted = reverseIndicator ? sortBy(filteredData, sortingIndicators[1]).reverse() : sortBy(filteredData, merged.sortBy);
-    const paginatedItems = sorted.slice(offset, offset + +merged.perPage);
+    const sorted = reverseIndicator ? sortBy(filteredData, sortingIndicators[1]).reverse() : sortBy(filteredData, params.sortBy);
+    let paginatedItems = sorted.slice(offset, offset + +params.perPage);
 
     return {
-        currentPage: merged.page,
-        perPage: +merged.perPage,
+        currentPage: page,
+        perPage: +params.perPage,
         total: filteredData.length,
-        lastPage: Math.ceil(filteredData.length / +merged.perPage),
+        lastPage: Math.ceil(filteredData.length / +params.perPage),
         data: paginatedItems,
     };
+};
+
+const getData = (params, entities) => {
+    console.log('Fetching from server with params: ', params);
+    const merged = { ...params };
+    let result = getDataForPage(merged.page, merged, entities);
+
+    if (!result.data.length) {
+        result = getDataForPage(1, merged, entities);
+    }
+
+    return result;
 };
 
 const dueTime = 1;

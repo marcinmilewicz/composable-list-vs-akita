@@ -49,7 +49,6 @@ export class CompanyListComponent implements OnDestroy {
         private companiesQuery: CompaniesQuery
     ) {
         const { createInitialParameters, persistParametersMetaData, paginationBuilder } = paginationTools(paginator);
-
         const { country, query, sortBy, perPage } = createInitialParameters(initialParameters);
 
         this.form = this.formBuilder.group({
