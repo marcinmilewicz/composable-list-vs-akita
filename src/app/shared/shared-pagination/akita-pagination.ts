@@ -4,7 +4,9 @@ import { startWith, switchMap, tap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 
 // @ts-ignore
-export type StreamedParameters<Parameters> = Partial<{ [K in keyof Parameters as `${K}$`]: Observable<Parameters[K]> }>
+// todo working only with Typescript 4.1.0
+//export type StreamedParameters<Parameters> = Partial<{ [K in keyof Parameters as `${K}$`]: Observable<Parameters[K]> }>
+export type StreamedParameters<Parameters> = Partial<{ [K in keyof Parameters as any]: Observable<Parameters[K]> }>
 
 export const createInitialParameters = <State, Parameters>(paginatorRef: PaginatorPlugin<State>, parameters: Parameters): Partial<{ [K in keyof Parameters]: Parameters[K] }> =>
     Object.keys(parameters).reduce((result, key) => {
