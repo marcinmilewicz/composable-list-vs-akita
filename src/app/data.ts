@@ -7,8 +7,8 @@ import { Company } from './feature-companies/state/companies.model';
 
 const count = 96;
 const people: Person[] = [];
-const companies: Company[] = [];
 const countries = ['Poland', 'Germany', 'Greece', 'Holland', 'Ireland'];
+let companies: Company[] = [];
 
 const createPeopleData = () => {
     for (let i = 0; i < count; i++) {
@@ -20,16 +20,18 @@ const createPeopleData = () => {
     }
 }
 
+const createCompany = () => ({
+    id: faker.random.number(),
+    name: faker.name.findName(),
+    account: faker.finance.account(),
+    city: faker.address.city(),
+    country: countries[faker.random.number(4)],
+    product: faker.commerce.product()
+})
+
 const createCompaniesData = () => {
     for (let i = 0; i < count; i++) {
-        companies.push({
-            id: faker.random.number(),
-            name: faker.name.findName(),
-            account: faker.finance.account(),
-            city: faker.address.city(),
-            country: countries[faker.random.number(4)],
-            product: faker.commerce.product()
-        });
+        companies.push(createCompany());
     }
 }
 
@@ -53,12 +55,26 @@ const getData = (params, entities) => {
     return {
         currentPage: merged.page,
         perPage: +merged.perPage,
-        total: entities.length,
-        lastPage: Math.ceil(entities.length / +merged.perPage),
+        total: filteredData.length,
+        lastPage: Math.ceil(filteredData.length / +merged.perPage),
         data: paginatedItems
     };
 }
 
-export const getPeople = (params) => timer(1).pipe(mapTo(getData(params, people)));
-export const getCompanies = (params) => timer(1).pipe(mapTo(getData(params, companies)))
-export const getCountries = () => timer(1).pipe(tap(() => console.info('Fetching countries')), mapTo(countries));
+const dueTime = 1;
+
+export const getPeople = (params) => timer(dueTime).pipe(mapTo(getData(params, people)));
+export const getCompanies = (params) => timer(dueTime).pipe(mapTo(getData(params, companies)))
+export const getCountries = () => timer(dueTime).pipe(tap(() => console.info('Fetching countries')), mapTo(countries));
+
+export const addCompany = () => {
+    const company = createCompany();
+    return timer(dueTime).pipe(tap(() => companies.push(company)), mapTo({ id: company.id }));
+}
+
+export const updateCompany = (id: number) => {
+    let index = companies.findIndex(company => company.id === id);
+    const company = { ...createCompany(), id };
+    companies[index] = company;
+    return timer(dueTime).pipe(mapTo({ id: company.id }));
+}

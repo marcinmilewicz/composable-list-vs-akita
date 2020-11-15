@@ -1,31 +1,37 @@
-<ng-container [formGroup]="form">
-    <select formControlName="sortBy">
-        <option value="id">Id - asc</option>
-        <option value="-id">Id - desc</option>
-        <option value="name">Name - asc</option>
-        <option value="-name">Name - desc</option>
-        <option value="product">Product - asc</option>
-        <option value="-product">Product - desc</option>
-    </select>
+<section class="filters" [formGroup]="form">
+    <label>
+        Sort by:
+        <select formControlName="sortBy">
+            <option *ngFor="let option of sortingOptions" [value]="option.value">{{option.label}}</option>
+        </select>
+    </label>
 
-    <input type="text" formControlName="query">
+    <label>
+        Search name:
+        <input type="text" formControlName="query">
+    </label>
 
-    <select formControlName="country">
-        <option *ngFor="let country of countries$ | async" [value]="country">{{country}}</option>
+    <label> Filter country:
+        <select formControlName="country">
+            <option *ngFor="let country of countries$ | async" [value]="country">{{country}}</option>
 
-    </select>
+        </select>
+    </label>
 
-    <select formControlName="perPage">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="10">10</option>
-    </select>
-
-</ng-container>
-
-<ng-container *ngIf="companies$ | async as company">
-    <pre>{{  company.data | json }}</pre>
-    <app-pagination-nav [paginatorRef]="paginatorRef" [controls]="company.pageControls"></app-pagination-nav>
+    <label>Per page:
+        <select formControlName="perPage">
+            <option *ngFor="let option of [5,10,15,50]" [value]="option">{{option}}</option>
+        </select>
+    </label>
+</section>
+<section class="add">
+    <button (click)="add()">Add Company</button>
+</section>
+<ng-container *ngIf="companies$ | async as companies">
+    <section class="list">
+        <div class="list-item" *ngFor="let company of companies.data">{{company | json}}
+            <button (click)="modify(company.id)">Modify</button>
+        </div>
+    </section>
+    <app-pagination-nav [paginatorRef]="paginatorRef" [controls]="companies.pageControls"></app-pagination-nav>
 </ng-container>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { PaginationResponse } from '@datorama/akita';
 import { Company } from './companies.model';
 import { Observable } from 'rxjs';
-import { getCompanies, getCountries } from '../../data'
+import { addCompany, getCompanies, getCountries, updateCompany } from '../../data'
 import { tap } from 'rxjs/operators';
 import { CompaniesStore } from './companies.store';
 
@@ -14,6 +14,14 @@ export class CompaniesService {
 
     get(params): Observable<PaginationResponse<Company>> {
         return getCompanies(params);
+    }
+
+    addCompany(): Observable<Pick<Company, 'id'>> {
+        return addCompany();
+    }
+
+    updateCompany(id: number): Observable<Pick<Company, 'id'>> {
+        return updateCompany(id);
     }
 
     fetchCountries(): Observable<string[]> {
