@@ -45,12 +45,12 @@ export class CompanyListComponent implements OnDestroy {
     sortingOptions = sortingOptions;
 
     constructor(
-        @Inject(COMPANIES_PAGINATOR) public paginatorRef: PaginatorPlugin<CompaniesState>,
+        @Inject(COMPANIES_PAGINATOR) public paginator: PaginatorPlugin<CompaniesState>,
         private formBuilder: FormBuilder,
         private companiesService: CompaniesService,
         private companiesQuery: CompaniesQuery
     ) {
-        const { country, query, sortBy, perPage } = createInitialParameters(this.paginatorRef, initialParameters);
+        const { country, query, sortBy, perPage } = createInitialParameters(this.paginator, initialParameters);
 
         this.form = this.formBuilder.group({
             sortBy: [sortBy],
@@ -63,9 +63,9 @@ export class CompanyListComponent implements OnDestroy {
             () => this.companiesService.get({ page, query, country, sortBy, perPage });
 
         const persistParameters = ([sortBy, query, country, perPage, page]) =>
-            persistParametersMetaData(paginatorRef, { page, query, country, sortBy, perPage })
+            persistParametersMetaData(paginator, { page, query, country, sortBy, perPage })
 
-        this.companies$ = newPaginableStream(this.paginatorRef, this.form)
+        this.companies$ = newPaginableStream(this.paginator, this.form)
             .withInitialParameters({ sortBy, query, country, perPage })
             .withFetch(fetchFunction)
             .withAction(persistParameters)
@@ -76,19 +76,19 @@ export class CompanyListComponent implements OnDestroy {
 
     add(): void {
         this.companiesService.addCompany().pipe(
-            tap(() => this.paginatorRef.refreshCurrentPage()),
+            tap(() => this.paginator.refreshCurrentPage()),
             untilDestroyed(this)
         ).subscribe()
     }
 
     modify(id: number): void {
         this.companiesService.updateCompany(id).pipe(
-            tap(() => this.paginatorRef.refreshCurrentPage()),
+            tap(() => this.paginator.refreshCurrentPage()),
             untilDestroyed(this)
         ).subscribe()
     }
 
     ngOnDestroy() {
-        this.paginatorRef.destroy();
+        this.paginator.destroy();
     }
 }
